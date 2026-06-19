@@ -1,0 +1,34 @@
+[
+  {
+    "id": "supreme-court",
+    "name": "最高人民法院",
+    "domain": "court.gov.cn",
+    "enabled": true,
+    "official": true,
+    "allow_direct_fetch": false
+  },
+  {
+    "id": "supreme-court-gazette",
+    "name": "最高人民法院公报",
+    "domain": "gongbao.court.gov.cn",
+    "enabled": true,
+    "official": true,
+    "allow_direct_fetch": false
+  },
+  {
+    "id": "case-library",
+    "name": "人民法院案例库",
+    "domain": "rmfyalk.court.gov.cn",
+    "enabled": true,
+    "official": true,
+    "allow_direct_fetch": false
+  },
+  {
+    "id": "supreme-procuratorate",
+    "name": "最高人民检察院",
+    "domain": "spp.gov.cn",
+    "enabled": true,
+    "official": true,
+    "allow_direct_fetch": false
+  }
+]

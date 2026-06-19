@@ -1,0 +1,28 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+*.log
+.logs/
+
+node_modules/
+dist/
+.vite/
+
+backend/outputs/*
+!backend/outputs/.gitkeep
+
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# 前端本地环境变量
+frontend/.env.local
+frontend/.env
+
+# 附件文件（不上传案例文件到 GitHub）
+*.docx
+*.pdf
+
+# OS 文件
+.DS_Store
+Thumbs.db
