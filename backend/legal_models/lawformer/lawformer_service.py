@@ -1,6 +1,20 @@
-# uncompyle6 version 3.9.3
-# Python bytecode version base 3.10 (3439)
-# Decompiled from: Python 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]
-# Embedded file name: D:\2026GS\FL\legal-ai-opinion\backend\legal_models\lawformer\lawformer_service.py
-# Compiled at: 2026-06-18 21:22:07
-# Size of source mod 2**32: 3219 bytes
+"""
+Lawformer 类案相似度排序模型（V1 mock）
+"""
+from typing import Dict, List
+
+
+def rank_cases_with_lawformer(
+    case_detail: str,
+    goals: str,
+    candidate_cases: List[Dict],
+) -> List[Dict]:
+    """Mock 类案相似度排序"""
+    ranked = []
+    for i, case in enumerate(candidate_cases):
+        ranked.append({
+            **case,
+            "lawformer_score": round(1.0 - i * 0.1, 2) if i < 10 else 0.5,
+            "lawformer_rank": i + 1,
+        })
+    return ranked

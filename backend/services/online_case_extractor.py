@@ -1,6 +1,20 @@
-# uncompyle6 version 3.9.3
-# Python bytecode version base 3.10 (3439)
-# Decompiled from: Python 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]
-# Embedded file name: .\services\online_case_extractor.py
-# Compiled at: 2026-06-18 21:52:07
-# Size of source mod 2**32: 2525 bytes
+"""
+在线案例提取 —— 从搜索 API 结果中提取案例信息
+"""
+from typing import Dict, List
+
+
+def extract_online_case(search_result: Dict) -> Dict:
+    """从单个搜索结果提取案例信息"""
+    return {
+        "title": search_result.get("title", ""),
+        "url": search_result.get("url", search_result.get("link", "")),
+        "snippet": search_result.get("snippet", search_result.get("content", "")),
+        "source": search_result.get("source", ""),
+        "result_type": "unknown",
+        "useful": False,
+        "useful_score": 0.0,
+        "verified": False,
+        "auto_collected": True,
+        "can_be_used_as_formal_citation": False,
+    }

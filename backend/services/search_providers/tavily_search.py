@@ -1,6 +1,41 @@
-# uncompyle6 version 3.9.3
-# Python bytecode version base 3.10 (3439)
-# Decompiled from: Python 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]
-# Embedded file name: .\services\search_providers\tavily_search.py
-# Compiled at: 2026-06-18 21:50:35
-# Size of source mod 2**32: 1283 bytes
+"""
+Tavily Search API Provider（推荐）
+"""
+import httpx
+from typing import Dict, List, Optional
+
+
+def search_tavily(query: str, api_key: str, max_results: int = 10,
+                  include_domains: Optional[List[str]] = None) -> List[Dict]:
+    """通过 Tavily Search API 搜索"""
+    if not api_key:
+        return []
+
+    url = "https://api.tavily.com/search"
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "api_key": api_key,
+        "query": query,
+        "search_depth": "advanced",
+        "max_results": min(max_results, 20),
+    }
+    if include_domains:
+        payload["include_domains"] = include_domains
+
+    try:
+        with httpx.Client(timeout=30) as client:
+            resp = client.post(url, json=payload, headers=headers)
+            resp.raise_for_status()
+            data = resp.json()
+    except Exception:
+        return []
+
+    results = []
+    for item in data.get("results", []):
+        results.append({
+            "title": item.get("title", ""),
+            "url": item.get("url", ""),
+            "snippet": item.get("content", item.get("snippet", "")),
+            "source": "tavily",
+        })
+    return results[:max_results]

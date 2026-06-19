@@ -1,6 +1,31 @@
-# uncompyle6 version 3.9.3
-# Python bytecode version base 3.10 (3439)
-# Decompiled from: Python 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]
-# Embedded file name: D:\2026GS\FL\legal-ai-opinion\backend\legal_models\internlm_law\internlm_reviewer.py
-# Compiled at: 2026-06-18 21:22:07
-# Size of source mod 2**32: 1998 bytes
+"""
+InternLM-Law 备用法律复核模型（V1 mock）
+"""
+from typing import Dict, List, Optional
+
+
+def review_with_internlm_law(
+    case_detail: str,
+    goals: str,
+    analysis_markdown: str,
+    cases: List[Dict],
+) -> Dict:
+    """Mock 法律复核，返回风险提示和建议"""
+    return {
+        "reviewer": "InternLM-Law (mock)",
+        "summary": "备用法律复核完成。本分析不构成正式法律意见。",
+        "risks": [
+            {
+                "title": "电子证据认定风险",
+                "description": "注意电子证据的真实性、合法性和关联性审查。",
+                "severity": "low",
+            },
+        ],
+        "risk_items": [
+            {
+                "title": "电子证据认定风险",
+                "description": "注意电子证据的真实性、合法性和关联性审查。",
+                "severity": "low",
+            },
+        ],
+    }

@@ -1,6 +1,50 @@
-# uncompyle6 version 3.9.3
-# Python bytecode version base 3.10 (3439)
-# Decompiled from: Python 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]
-# Embedded file name: services\official_source_filter.py
-# Compiled at: 2026-06-18 22:19:40
-# Size of source mod 2**32: 3101 bytes
+"""
+官方来源过滤 —— 加载和过滤官方在线来源
+"""
+import json
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+
+ONLINE_SOURCES_FILE = Path(__file__).resolve().parent.parent / "data" / "online_sources.json"
+
+
+def load_online_sources() -> List[Dict]:
+    """加载官方在线来源列表"""
+    if ONLINE_SOURCES_FILE.exists():
+        try:
+            with open(ONLINE_SOURCES_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except (json.JSONDecodeError, IOError):
+            pass
+    return []
+
+
+def filter_official_result(results: List[Dict], sources: List[Dict]) -> List[Dict]:
+    """过滤只保留来自官方来源的结果"""
+    official_domains = set()
+    for src in sources:
+        if src.get("enabled", True) and src.get("domain"):
+            official_domains.add(src["domain"].lower())
+
+    if not official_domains:
+        return results
+
+    filtered = []
+    for r in results:
+        url = r.get("url", r.get("link", ""))
+        if any(domain in url.lower() for domain in official_domains):
+            filtered.append(r)
+    return filtered
+
+
+def update_online_source(source_id: str, update: Dict[str, Any]) -> Optional[Dict]:
+    """更新在线来源配置"""
+    sources = load_online_sources()
+    for src in sources:
+        if src.get("id") == source_id:
+            src.update(update)
+            with open(ONLINE_SOURCES_FILE, 'w', encoding='utf-8') as f:
+                json.dump(sources, f, ensure_ascii=False, indent=2)
+            return src
+    return None
