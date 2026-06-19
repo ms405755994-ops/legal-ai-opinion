@@ -99,6 +99,25 @@ button:disabled {
   overflow-x: auto;
 }
 
+.api-bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 6px 32px;
+  background: #fffdf8;
+  border-bottom: 1px solid #ece9df;
+  font-size: 0.8rem;
+  color: #5a5d57;
+  flex-wrap: wrap;
+}
+
+.api-bar code {
+  font-size: 0.78rem;
+  background: #ece9df;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
 .app-tabs button {
   border: 1px solid #cbd0c9;
   border-radius: 999px;
@@ -145,40 +164,44 @@ button:disabled {
 
 .analysis-input-layout {
   display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(320px, 2fr);
-  gap: 18px;
+  grid-template-columns: minmax(0, 1.6fr) minmax(340px, 1fr);
+  gap: 24px;
   margin-top: 18px;
+  align-items: start;
+}
+
+.case-input-group {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.case-input-group .input-panel,
+.case-input-group textarea {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .analysis-side {
   display: grid;
-  grid-template-rows: minmax(260px, auto) auto;
+  grid-template-rows: minmax(220px, auto) auto;
   gap: 14px;
+  min-width: 0;
 }
 
 .input-panel {
   display: flex;
-  min-height: 360px;
+  min-height: 260px;
   flex-direction: column;
   gap: 10px;
-}
-
-.analysis-side .input-panel {
-  min-height: 260px;
-}
-
-.analysis-side .input-panel textarea {
-  min-height: 220px;
-}
-
-.input-label {
-  font-weight: 700;
-  color: #303530;
+  min-width: 0;
 }
 
 .input-panel textarea {
   flex: 1;
-  min-height: 330px;
+  width: 100%;
+  min-height: 220px;
   resize: vertical;
   border: 1px solid #c8cbc4;
   border-radius: 8px;
@@ -187,6 +210,20 @@ button:disabled {
   color: #252a27;
   background: #fff;
   outline: none;
+  box-sizing: border-box;
+}
+
+.analysis-side .input-panel {
+  min-height: 220px;
+}
+
+.analysis-side .input-panel textarea {
+  min-height: 200px;
+}
+
+.input-label {
+  font-weight: 700;
+  color: #303530;
 }
 
 .input-panel textarea:focus,

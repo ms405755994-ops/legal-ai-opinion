@@ -1,4 +1,4 @@
-import { Play, Search } from 'lucide-react'
+import { Play, Search, Wifi, WifiOff } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import api, { hasAccessToken } from '../api/client.js'
 import AnalyzeProgressPanel from '../components/AnalyzeProgressPanel.jsx'
@@ -20,6 +20,8 @@ export default function MainAnalysisPage() {
   const [resultMsg, setResultMsg] = useState('')
   const [msgType, setMsgType] = useState('')
   const [modelStatus, setModelStatus] = useState({})
+  const [backendReachable, setBackendReachable] = useState(null) // null=checking, true/false
+  const [runtimeConfig, setRuntimeConfig] = useState(null)
 
   // 异步任务状态
   const [jobId, setJobId] = useState(null)
@@ -31,13 +33,36 @@ export default function MainAnalysisPage() {
   const activeJobRef = useRef(null)
 
   useEffect(() => {
-    api.modelStatus().then(setModelStatus).catch(() => setModelStatus({}))
-    return () => {
+    let cancelled = false
+    async function checkBackend() {
+      try {
+        const [healthData, statusData, configData] = await Promise.all([
+          api.health(),
+          api.modelStatus(),
+          api.getOnlineSources().then(() => null).catch(() => null) // just touch
+        ])
+        if (cancelled) return
+        setBackendReachable(true)
+        setModelStatus(statusData)
+        // Try to get runtime config
+        try {
+          const cfg = await fetch(`${api.baseUrl}/api/config/runtime`).then(r => r.json())
+          setRuntimeConfig(cfg)
+        } catch { /* non-critical */ }
+      } catch {
+        if (cancelled) return
+        setBackendReachable(false)
+        setModelStatus({})
+      }
+    }
+    checkBackend()
+    return () => { 
+      cancelled = true
       if (pollRef.current) clearTimeout(pollRef.current)
     }
   }, [])
 
-  const onlineSearchReady = Boolean(modelStatus.online_search?.enabled)
+  const onlineSearchReady = backendReachable && Boolean(modelStatus.online_search?.enabled)
 
   function handleExtractedText(text, mode) {
     if (mode === 'replace' || !caseDetail.trim()) {
@@ -230,9 +255,30 @@ export default function MainAnalysisPage() {
           )}
         </div>
       )}
-      {!onlineSearchReady && (
+
+      {/* ── 后端连接状态 ── */}
+      {backendReachable === false && (
+        <div className="notice notice-danger">
+          <WifiOff size={16} /> 后端未连接（{api.baseUrl}）
+          <p style={{ margin: '6px 0 0', fontWeight: 400 }}>
+            请确认：1) 本机后端已启动；2) Cloudflare Tunnel 已运行；3) VITE_API_BASE_URL 已更新为 Tunnel 公网地址。
+          </p>
+        </div>
+      )}
+      {backendReachable && !onlineSearchReady && (
         <div className="notice notice-warn">
-          当前未配置在线搜索 API Key，系统无法自动检索真实案例链接。请在 backend/.env 中配置 Tavily API Key（推荐），或 Google CSE / Bing（备选）。
+          <Wifi size={16} /> 后端已连接，但 Tavily API Key 未配置。请在 backend/.env 中配置 Tavily API Key（推荐），或 Google CSE / Bing（备选）。
+        </div>
+      )}
+      {backendReachable && runtimeConfig && (
+        <div className="notice" style={{ background: '#f4faf6', borderColor: '#b8dbc4', fontWeight: 400 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '6px 16px', fontSize: '0.84rem' }}>
+            <span>API 地址：<code>{api.baseUrl}</code></span>
+            <span>DeepSeek：<code>{runtimeConfig.DEEPSEEK_API_KEY_CONFIGURED ? '已配置' : '未配置'}</code></span>
+            <span>模型：<code>{runtimeConfig.DEEPSEEK_MODEL || '-'}</code></span>
+            <span>AI 模式：<code>{runtimeConfig.AI_FAILURE_MODE || '-'}</code></span>
+            <span>搜索提供方：<code>{runtimeConfig.ONLINE_SEARCH_PROVIDER || '-'}</code></span>
+          </div>
         </div>
       )}
       <div className="analysis-bar">

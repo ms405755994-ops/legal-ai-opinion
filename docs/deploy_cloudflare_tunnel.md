@@ -7,6 +7,27 @@
 - 本机已安装 [cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/)
 - 后端已在 `D:\2026GS\FL\legal-ai-opinion\backend` 配置完毕
 
+### Windows 安装 cloudflared
+
+**方式一：winget（推荐）**
+```powershell
+winget install -e --id Cloudflare.cloudflared
+```
+安装后**重新打开 PowerShell**，验证：
+```powershell
+cloudflared --version
+```
+
+**方式二：手动下载**
+从 [Cloudflare 官方下载页面](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/) 下载 Windows 64-bit 版本（`cloudflared-windows-amd64.exe`），重命名为 `cloudflared.exe` 并放到 `C:\Windows\System32\` 或添加到 PATH。
+
+### 如果 cloudflared 无法识别
+
+1. **未安装**：按上述方式安装。
+2. **PATH 未刷新**：关闭当前 PowerShell，重新打开。
+3. **仍失败**：重启电脑，或手动将 `cloudflared.exe` 所在目录加入系统 PATH 环境变量。
+4. **验证**：`Get-Command cloudflared` 应返回路径。
+
 ## 步骤
 
 ### 1. 启动本机后端

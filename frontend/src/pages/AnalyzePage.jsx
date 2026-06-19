@@ -1,6 +1,6 @@
-import { Activity } from 'lucide-react'
+import { Activity, Wifi, WifiOff } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import api from '../api/client.js'
+import api, { hasAccessToken } from '../api/client.js'
 import AccessTokenPanel from '../components/AccessTokenPanel.jsx'
 import DataSourceSettingsPage from './DataSourceSettingsPage.jsx'
 import LinkLibraryPage from './LinkLibraryPage.jsx'
@@ -26,6 +26,7 @@ export default function AnalyzePage() {
     api.modelStatus().then(setStatus).catch(() => setStatus({}))
   }, [])
 
+  const backendOk = health?.status === 'ok'
   const deepseekReady = Boolean(status.deepseek?.enabled)
   const onlineReady = Boolean(status.online_search?.enabled)
 
@@ -41,8 +42,9 @@ export default function AnalyzePage() {
         </div>
         <div className="topbar-actions">
           <AccessTokenPanel />
-          <span className={health ? 'backend-pill ok' : 'backend-pill'}>
-            后端 {health ? 'OK' : '未连接'}
+          <span className={`backend-pill ${backendOk ? 'ok' : ''}`}>
+            {backendOk ? <Wifi size={14} /> : <WifiOff size={14} />}
+            后端 {backendOk ? '已连接' : '未连接'}
           </span>
           <span className={deepseekReady ? 'backend-pill ok' : 'backend-pill'}>
             DeepSeek {deepseekReady ? '已启用' : '未启用'}
@@ -52,6 +54,10 @@ export default function AnalyzePage() {
           </span>
         </div>
       </header>
+      <div className="api-bar">
+        <span>API：<code>{api.baseUrl}</code></span>
+        <span>令牌：<code>{hasAccessToken() ? '已设置' : '未设置'}</code></span>
+      </div>
       <nav className="app-tabs" aria-label="功能菜单">
         {tabs.map((tab) => (
           <button key={tab.id} className={active === tab.id ? 'active' : ''} type="button" onClick={() => setActive(tab.id)}>
